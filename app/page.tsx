@@ -83,7 +83,7 @@ export default async function Home() {
               </h2>
               <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
                 Proper nutrition is the foundation of good health. We provide evidence-based dietary guidance tailored to your specific needs, 
-                whether you're looking to lose weight, gain muscle, or manage a health condition.
+                whether you&apos;re looking to lose weight, gain muscle, or manage a health condition.
               </p>
               <ul className="space-y-4 mb-8">
                 {[

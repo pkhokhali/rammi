@@ -102,7 +102,8 @@ export default async function AdminDashboard() {
                 <p className="text-gray-600 text-sm">Media Files</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">{stats.media}</p>
               </div>
-              <Image className="h-12 w-12 text-purple-600" />
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
+              <Image className="h-12 w-12 text-purple-600" aria-hidden="true" />
             </div>
             <Link href="/admin/media" className="text-purple-600 text-sm font-medium mt-4 inline-block">
               Manage →

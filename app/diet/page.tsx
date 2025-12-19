@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { query } from '@/lib/db';
 import { Apple, ArrowRight } from 'lucide-react';
 import { AnimatedCard, AnimatedSection } from '@/components/AnimatedCards';
-import { AnimatedIcon } from '@/components/AnimatedIcon';
+import AnimatedIcon from '@/components/AnimatedIcon';
 
 export const metadata = {
   title: 'Diet & Nutrition - HealthFit',
