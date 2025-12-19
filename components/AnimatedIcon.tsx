@@ -7,12 +7,14 @@ interface AnimatedIconProps {
   children: ReactNode;
   animation?: 'float' | 'rotate' | 'scale';
   duration?: number;
+  className?: string;
 }
 
 export default function AnimatedIcon({ 
   children, 
   animation = 'float',
-  duration = 4 
+  duration = 4,
+  className = ''
 }: AnimatedIconProps) {
   const animations = {
     float: {
@@ -30,7 +32,7 @@ export default function AnimatedIcon({
   };
 
   return (
-    <motion.div animate={animations[animation]}>
+    <motion.div className={className} animate={animations[animation]}>
       {children}
     </motion.div>
   );
