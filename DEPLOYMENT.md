@@ -68,12 +68,16 @@ NODE_ENV=production
 
 ## Post-Deployment
 
-1. **Run database migrations** (if needed)
-   - Connect to your production database
-   - Run: `npm run db:migrate`
+✅ **Database setup is now automatic!** 
 
-2. **Seed initial data** (optional)
-   - Run: `npm run db:seed`
+The database migrations and seeding run automatically during deployment. No manual steps needed!
+
+If you need to run setup manually:
+```bash
+# Set DATABASE_URL environment variable first
+export DATABASE_URL=your_connection_string
+npm run db:setup
+```
 
 3. **Test the deployment**
    - Visit your Vercel URL

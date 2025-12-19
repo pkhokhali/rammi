@@ -31,10 +31,11 @@ export default function AdminLogin() {
         router.push('/admin/dashboard');
         router.refresh();
       } else {
-        setError(data.error || 'Invalid credentials');
+        setError(data.error || 'Invalid credentials. Please check your email and password.');
       }
-    } catch (error) {
-      setError('An error occurred. Please try again.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      setError('Connection error. Please check your internet connection and try again.');
     } finally {
       setIsLoading(false);
     }

@@ -28,21 +28,27 @@ export default async function AdminDashboard() {
   };
 
   try {
-    const [blogsResult, workoutsResult, dietResult, mediaResult] = await Promise.all([
-      query('SELECT COUNT(*) as count FROM blogs'),
-      query('SELECT COUNT(*) as count FROM workouts'),
-      query('SELECT COUNT(*) as count FROM diet_content'),
-      query('SELECT COUNT(*) as count FROM media'),
-    ]);
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      console.warn('DATABASE_URL not set. Stats will show 0.');
+    } else {
+      const [blogsResult, workoutsResult, dietResult, mediaResult] = await Promise.all([
+        query('SELECT COUNT(*) as count FROM blogs').catch(() => ({ rows: [{ count: '0' }] })),
+        query('SELECT COUNT(*) as count FROM workouts').catch(() => ({ rows: [{ count: '0' }] })),
+        query('SELECT COUNT(*) as count FROM diet_content').catch(() => ({ rows: [{ count: '0' }] })),
+        query('SELECT COUNT(*) as count FROM media').catch(() => ({ rows: [{ count: '0' }] })),
+      ]);
 
-    stats = {
-      blogs: parseInt(blogsResult.rows[0]?.count || '0'),
-      workouts: parseInt(workoutsResult.rows[0]?.count || '0'),
-      dietContent: parseInt(dietResult.rows[0]?.count || '0'),
-      media: parseInt(mediaResult.rows[0]?.count || '0'),
-    };
+      stats = {
+        blogs: parseInt(blogsResult.rows[0]?.count || '0'),
+        workouts: parseInt(workoutsResult.rows[0]?.count || '0'),
+        dietContent: parseInt(dietResult.rows[0]?.count || '0'),
+        media: parseInt(mediaResult.rows[0]?.count || '0'),
+      };
+    }
   } catch (error) {
     console.error('Error fetching stats:', error);
+    // Stats will remain at 0, which is acceptable
   }
 
   return (

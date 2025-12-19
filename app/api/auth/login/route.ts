@@ -12,7 +12,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await authenticateUser(email, password);
+    // Check if database is available
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json(
+        { error: 'Database not configured. Please set DATABASE_URL environment variable.' },
+        { status: 503 }
+      );
+    }
+
+    let user;
+    try {
+      user = await authenticateUser(email, password);
+    } catch (dbError: any) {
+      console.error('Database error during login:', dbError);
+      return NextResponse.json(
+        { error: 'Database connection error. Please check your database configuration.' },
+        { status: 503 }
+      );
+    }
 
     if (!user) {
       return NextResponse.json(
@@ -46,7 +63,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Login error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: error.message || 'Internal server error. Please try again later.' },
       { status: 500 }
     );
   }

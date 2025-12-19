@@ -8,9 +8,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "next build",
+    "vercel-build": "node scripts/setup-db.js && next build",
     "db:migrate": "node scripts/migrate.js",
-    "db:seed": "node scripts/seed.js"
+    "db:seed": "node scripts/seed.js",
+    "db:setup": "node scripts/setup-db.js",
+    "postinstall": "node scripts/setup-db.js || true"
   },
   "dependencies": {
     "next": "^14.0.4",
