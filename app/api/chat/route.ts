@@ -42,7 +42,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { message, sessionId } = await request.json();
+    const { message, sessionId, conversationHistory } = await request.json();
 
     if (!message || typeof message !== 'string' || message.trim().length === 0) {
       return NextResponse.json(
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get AI response
-    const aiResponse = await getGeminiResponse(message);
+    // Get AI response with conversation history for context
+    const aiResponse = await getGeminiResponse(message, conversationHistory || []);
 
     // Log chat (optional - only if database is configured)
     if (process.env.DATABASE_URL) {

@@ -15,7 +15,7 @@ export default function FloatingChatbot() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'assistant',
-      content: 'Hello! I\'m your Health, Diet, and Fitness Assistant. I can help you with questions about nutrition, exercise, weight management, and healthy lifestyle habits. What would you like to know?',
+      content: 'Hello! I\'m your Health & Wellness Consultant, representing a team of certified dietitians, personal trainers, and health advisors. I\'m here to provide personalized, evidence-based guidance on nutrition, fitness, and overall wellness.\n\nTo help you best, could you tell me:\n1. What are your primary health or fitness goals?\n2. Are you looking for advice on nutrition, exercise, weight management, or general wellness?\n\nI\'ll ask a few clarifying questions to understand your situation better, then provide tailored recommendations that work for your lifestyle.',
     },
   ]);
   const [input, setInput] = useState('');
@@ -54,6 +54,7 @@ export default function FloatingChatbot() {
         body: JSON.stringify({
           message: userMessage,
           sessionId: sessionId.current,
+          conversationHistory: messages, // Send conversation history for context
         }),
       });
 
