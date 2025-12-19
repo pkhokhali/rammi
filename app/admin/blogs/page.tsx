@@ -23,10 +23,13 @@ export default async function AdminBlogs() {
   let blogs: any[] = [];
 
   try {
-    const result = await query('SELECT * FROM blogs ORDER BY created_at DESC');
-    blogs = result.rows;
+    if (process.env.DATABASE_URL) {
+      const result = await query('SELECT * FROM blogs ORDER BY created_at DESC');
+      blogs = result.rows;
+    }
   } catch (error) {
     console.error('Database error:', error);
+    blogs = []; // Ensure blogs is always an array
   }
 
   return (

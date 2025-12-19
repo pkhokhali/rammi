@@ -22,10 +22,13 @@ export default async function AdminWorkouts() {
   let workouts: any[] = [];
 
   try {
-    const result = await query('SELECT * FROM workouts ORDER BY created_at DESC');
-    workouts = result.rows;
+    if (process.env.DATABASE_URL) {
+      const result = await query('SELECT * FROM workouts ORDER BY created_at DESC');
+      workouts = result.rows;
+    }
   } catch (error) {
     console.error('Database error:', error);
+    workouts = []; // Ensure workouts is always an array
   }
 
   return (

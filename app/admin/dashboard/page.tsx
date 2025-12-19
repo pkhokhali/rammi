@@ -7,17 +7,119 @@ import { FileText, Dumbbell, Apple, Image, LogOut, Settings } from 'lucide-react
 import AdminNavbar from '@/components/AdminNavbar';
 
 export default async function AdminDashboard() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
+  try {
+    // #region agent log
+    const logEntry = {
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'A',
+      timestamp: Date.now(),
+      location: 'app/admin/dashboard/page.tsx:entry',
+      message: 'AdminDashboard function entry',
+      data: {
+        hasDatabaseUrl: !!process.env.DATABASE_URL,
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        nodeEnv: process.env.NODE_ENV,
+      }
+    };
+    fetch('http://127.0.0.1:7246/ingest/bfb24e18-70ed-49d0-87f8-12f2e8728fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logEntry)
+    }).catch(() => {});
+    // #endregion
 
-  if (!token) {
-    redirect('/admin/login');
-  }
+    const cookieStore = await cookies();
+    
+    // #region agent log
+    const logAfterCookies = {
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'A',
+      timestamp: Date.now(),
+      location: 'app/admin/dashboard/page.tsx:after-cookies',
+      message: 'After cookies() call',
+      data: { cookieStoreExists: !!cookieStore }
+    };
+    fetch('http://127.0.0.1:7246/ingest/bfb24e18-70ed-49d0-87f8-12f2e8728fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logAfterCookies)
+    }).catch(() => {});
+    // #endregion
 
-  const user = verifyToken(token);
-  if (!user) {
-    redirect('/admin/login');
-  }
+    const token = cookieStore.get('auth_token')?.value;
+
+    // #region agent log
+    const logAfterToken = {
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'A',
+      timestamp: Date.now(),
+      location: 'app/admin/dashboard/page.tsx:after-token',
+      message: 'After getting token from cookies',
+      data: {
+        hasToken: !!token,
+        tokenLength: token?.length || 0,
+      }
+    };
+    fetch('http://127.0.0.1:7246/ingest/bfb24e18-70ed-49d0-87f8-12f2e8728fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logAfterToken)
+    }).catch(() => {});
+    // #endregion
+
+    if (!token) {
+      redirect('/admin/login');
+    }
+
+    // #region agent log
+    const logBeforeVerify = {
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'B',
+      timestamp: Date.now(),
+      location: 'app/admin/dashboard/page.tsx:before-verify',
+      message: 'Before verifyToken call',
+      data: {
+        hasJwtSecret: !!process.env.JWT_SECRET,
+        jwtSecretLength: process.env.JWT_SECRET?.length || 0,
+      }
+    };
+    fetch('http://127.0.0.1:7246/ingest/bfb24e18-70ed-49d0-87f8-12f2e8728fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logBeforeVerify)
+    }).catch(() => {});
+    // #endregion
+
+    const user = verifyToken(token);
+
+    // #region agent log
+    const logAfterVerify = {
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'B',
+      timestamp: Date.now(),
+      location: 'app/admin/dashboard/page.tsx:after-verify',
+      message: 'After verifyToken call',
+      data: {
+        userExists: !!user,
+        userId: user?.id || null,
+        userEmail: user?.email || null,
+      }
+    };
+    fetch('http://127.0.0.1:7246/ingest/bfb24e18-70ed-49d0-87f8-12f2e8728fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logAfterVerify)
+    }).catch(() => {});
+    // #endregion
+
+    if (!user) {
+      redirect('/admin/login');
+    }
 
   // Get stats
   let stats = {
@@ -149,6 +251,32 @@ export default async function AdminDashboard() {
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error: any) {
+    // #region agent log
+    const logError = {
+      sessionId: 'debug-session',
+      runId: 'run1',
+      hypothesisId: 'C',
+      timestamp: Date.now(),
+      location: 'app/admin/dashboard/page.tsx:catch',
+      message: 'Error in AdminDashboard',
+      data: {
+        errorMessage: error?.message || 'Unknown error',
+        errorName: error?.name || 'Unknown',
+        errorStack: error?.stack?.substring(0, 200) || 'No stack',
+      }
+    };
+    fetch('http://127.0.0.1:7246/ingest/bfb24e18-70ed-49d0-87f8-12f2e8728fe0', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(logError)
+    }).catch(() => {});
+    // #endregion
+
+    console.error('Admin dashboard error:', error);
+    // Re-throw to trigger Next.js error boundary
+    throw error;
+  }
 }
 

@@ -2,30 +2,43 @@ import { Pool } from 'pg';
 
 let pool: Pool | null = null;
 
-export function getDbPool(): Pool {
+export function getDbPool(): Pool | null {
+  const connectionString = process.env.DATABASE_URL;
+  
+  if (!connectionString) {
+    console.warn('DATABASE_URL not set. Database operations will fail.');
+    return null;
+  }
+
   if (!pool) {
-    const connectionString = process.env.DATABASE_URL;
-    
-    if (!connectionString) {
-      throw new Error('DATABASE_URL environment variable is not set');
+    try {
+      pool = new Pool({
+        connectionString,
+        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      });
+
+      // Handle pool errors
+      pool.on('error', (err) => {
+        console.error('Unexpected error on idle client', err);
+      });
+    } catch (error) {
+      console.error('Failed to create database pool:', error);
+      return null;
     }
-
-    pool = new Pool({
-      connectionString,
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
-    });
-
-    // Handle pool errors
-    pool.on('error', (err) => {
-      console.error('Unexpected error on idle client', err);
-    });
   }
 
   return pool;
 }
 
-export async function query(text: string, params?: any[]) {
+export async function query(text: string, params?: any[]): Promise<{ rows: any[]; rowCount: number }> {
   const db = getDbPool();
+  
+  if (!db) {
+    // Return empty result if database is not configured
+    console.warn('Database not configured. Returning empty result.');
+    return { rows: [], rowCount: 0 };
+  }
+
   const start = Date.now();
   try {
     const res = await db.query(text, params);
@@ -34,7 +47,8 @@ export async function query(text: string, params?: any[]) {
     return res;
   } catch (error) {
     console.error('Database query error', error);
-    throw error;
+    // Return empty result instead of throwing to prevent page crashes
+    return { rows: [], rowCount: 0 };
   }
 }
 

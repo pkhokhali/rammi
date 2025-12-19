@@ -23,19 +23,23 @@ export default async function AdminDiet() {
   let categories: any[] = [];
 
   try {
-    const [contentResult, categoriesResult] = await Promise.all([
-      query(`
-        SELECT dc.*, c.name as category_name 
-        FROM diet_content dc 
-        LEFT JOIN categories c ON dc.category_id = c.id 
-        ORDER BY dc.created_at DESC
-      `),
-      query('SELECT * FROM categories ORDER BY name'),
-    ]);
-    dietContent = contentResult.rows;
-    categories = categoriesResult.rows;
+    if (process.env.DATABASE_URL) {
+      const [contentResult, categoriesResult] = await Promise.all([
+        query(`
+          SELECT dc.*, c.name as category_name 
+          FROM diet_content dc 
+          LEFT JOIN categories c ON dc.category_id = c.id 
+          ORDER BY dc.created_at DESC
+        `),
+        query('SELECT * FROM categories ORDER BY name'),
+      ]);
+      dietContent = contentResult.rows;
+      categories = categoriesResult.rows;
+    }
   } catch (error) {
     console.error('Database error:', error);
+    dietContent = [];
+    categories = [];
   }
 
   return (

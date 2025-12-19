@@ -30,9 +30,24 @@ export function generateToken(user: User): string {
 
 export function verifyToken(token: string): User | null {
   try {
+    if (!token || typeof token !== 'string') {
+      return null;
+    }
+
+    if (!JWT_SECRET || JWT_SECRET === 'your-secret-key-change-in-production') {
+      console.warn('JWT_SECRET is not set or using default. Please set a secure secret in production.');
+    }
+
     const decoded = jwt.verify(token, JWT_SECRET) as User;
+    
+    // Validate decoded user structure
+    if (!decoded || !decoded.id || !decoded.email || !decoded.role) {
+      return null;
+    }
+
     return decoded;
   } catch (error) {
+    // Token is invalid, expired, or malformed
     return null;
   }
 }
@@ -57,24 +72,39 @@ export async function createUser(email: string, password: string, name: string, 
 }
 
 export async function authenticateUser(email: string, password: string): Promise<User | null> {
-  const result = await query('SELECT id, email, password_hash, name, role FROM users WHERE email = $1', [email]);
-  
-  if (result.rows.length === 0) {
+  try {
+    if (!process.env.DATABASE_URL) {
+      console.error('DATABASE_URL not set. Cannot authenticate user.');
+      return null;
+    }
+
+    const result = await query('SELECT id, email, password_hash, name, role FROM users WHERE email = $1', [email]);
+    
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    const user = result.rows[0];
+    
+    if (!user.password_hash) {
+      return null;
+    }
+
+    const isValid = await verifyPassword(password, user.password_hash);
+
+    if (!isValid) {
+      return null;
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
+  } catch (error) {
+    console.error('Authentication error:', error);
     return null;
   }
-
-  const user = result.rows[0];
-  const isValid = await verifyPassword(password, user.password_hash);
-
-  if (!isValid) {
-    return null;
-  }
-
-  return {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  };
 }
 
