@@ -30,7 +30,7 @@ export function getDbPool(): Pool | null {
   return pool;
 }
 
-export async function query(text: string, params?: any[]): Promise<{ rows: any[]; rowCount: number }> {
+export async function query(text: string, params?: any[]): Promise<{ rows: any[]; rowCount: number | null }> {
   const db = getDbPool();
   
   if (!db) {
